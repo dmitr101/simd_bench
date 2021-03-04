@@ -1,0 +1,8 @@
+.vs/
+
+#cmake stuff
+out/
+
+#vim stuff
+*~
+[._]*.un~
