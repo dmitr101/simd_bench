@@ -1,6 +1,7 @@
 #pragma once
 #include <random>
 #include <algorithm>
+#include <gsl/span>
 
 constexpr int SSE_FLOAT_ALIGN = 4;
 constexpr int AVX_FLOAT_ALIGN = 8;
@@ -14,12 +15,12 @@ std::vector<float> create_floats(int num, int seed, std::pair<float, float> minm
 	return result;
 }
 
-std::pair<float*, int> get_simd_aligned_sub_span(std::vector<float>& vec, int float_align)
+gsl::span<float> get_simd_aligned_sub_span(std::vector<float>& vec, int float_align)
 {
 	const int byte_align = float_align * sizeof(float);
 
 	float* data = vec.data();
-	int num = static_cast<int>(vec.size());
+	size_t num = vec.size();
 	int align_rem = (uintptr_t)data % (uintptr_t)byte_align;
 	int elems = align_rem / sizeof(float);
 

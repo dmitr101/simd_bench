@@ -18,3 +18,6 @@ find_path(BENCHMARK_INCLUDE_DIR benchmark/benchmark.h)
 include_directories(${BENCHMARK_INCLUDE_DIR})
 target_link_libraries(bench PRIVATE benchmark::benchmark benchmark::benchmark_main)
 
+#gsl
+find_package(Microsoft.GSL CONFIG REQUIRED)
+target_link_libraries(bench PRIVATE Microsoft.GSL::GSL)

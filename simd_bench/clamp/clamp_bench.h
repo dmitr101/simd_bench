@@ -7,16 +7,16 @@
 #include "clamp_scalar.h"
 #include "clamp_sse.h"
 
-constexpr int ELEM_COUNT = 2 * 1024; //8 megs of floats(assuming sizeof(float) == 4)
+constexpr int ELEM_COUNT = 2 * 1024;
 constexpr int RND_SEED = 651987;
 constexpr std::pair<float, float> DEFAULT_RANGE = { -1.5f, 1.5f };
 
 static void ScalarBuffClampAligned(benchmark::State& state) {
 	auto v = create_floats(ELEM_COUNT, RND_SEED, DEFAULT_RANGE);
-	auto p = get_simd_aligned_sub_span(v, SSE_FLOAT_ALIGN);
+	auto s = get_simd_aligned_sub_span(v, SSE_FLOAT_ALIGN);
 	for ([[maybe_unused]] auto _ : state) {
-		clamp_f32_buff_scalar(p.first, p.second);
-		benchmark::DoNotOptimize(p.first);
+		clamp_f32_buff_scalar(s.data(), (int)s.size());
+		benchmark::DoNotOptimize(s.data());
 	}
 }
 BENCHMARK(ScalarBuffClampAligned);
@@ -32,10 +32,10 @@ BENCHMARK(ScalarBuffClampUnaligned);
 
 static void SIMDBuffClampAligned(benchmark::State& state) {
 	auto v = create_floats(ELEM_COUNT, RND_SEED, DEFAULT_RANGE);
-	auto p = get_simd_aligned_sub_span(v, SSE_FLOAT_ALIGN);
+	auto s = get_simd_aligned_sub_span(v, SSE_FLOAT_ALIGN);
 	for ([[maybe_unused]] auto _ : state) {
-		clamp_f32_buff_sse(p.first, p.second);
-		benchmark::DoNotOptimize(p.first);
+		clamp_f32_buff_sse(s.data(), (int)s.size());
+		benchmark::DoNotOptimize(s.data());
 	}
 }
 BENCHMARK(SIMDBuffClampAligned);

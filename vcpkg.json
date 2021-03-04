@@ -1,0 +1,7 @@
+{
+	"name": "simd-bench",
+	"dependencies": [
+		"benchmark",
+		"ms-gsl"
+	]
+}
