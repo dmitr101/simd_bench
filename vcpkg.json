@@ -1,7 +1,7 @@
 {
 	"name": "simd-bench",
+	"version-string": "0.0.1",
 	"dependencies": [
-		"benchmark",
-		"ms-gsl"
+		"benchmark"
 	]
 }

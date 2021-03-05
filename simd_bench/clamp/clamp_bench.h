@@ -2,50 +2,66 @@
 
 #include <benchmark/benchmark.h>
 
-#include "util/f32_buff_utils.h"
+#include "util/buff_utils.h"
 
 #include "clamp_scalar.h"
 #include "clamp_sse.h"
+#include "clamp_avx.h"
 
-constexpr int ELEM_COUNT = 2 * 1024;
-constexpr int RND_SEED = 651987;
-constexpr std::pair<float, float> DEFAULT_RANGE = { -1.5f, 1.5f };
+constexpr size_t RND_SEED = 651987;
+constexpr float DEFAULT_MIN = -1.5f;
+constexpr float DEFAULT_MAX = 1.5f;
+constexpr size_t ONE_KB = 1024;
+constexpr size_t ONE_MB = 1024 * 1024;
+using in_place_buff_op_func = void(*)(float*, int);
 
-static void ScalarBuffClampAligned(benchmark::State& state) {
-	auto v = create_floats(ELEM_COUNT, RND_SEED, DEFAULT_RANGE);
-	auto s = get_simd_aligned_sub_span(v, SSE_FLOAT_ALIGN);
+template<in_place_buff_op_func Func, size_t Size, size_t Alignment>
+static void BenchF32BufferOp(benchmark::State& state)
+{
+	auto buff = f32buffer<Alignment>::create_random(Size, RND_SEED, DEFAULT_MIN, DEFAULT_MAX);
 	for ([[maybe_unused]] auto _ : state) {
-		clamp_f32_buff_scalar(s.data(), (int)s.size());
-		benchmark::DoNotOptimize(s.data());
+		clamp_f32_buff_scalar(buff.ptr(), (int)buff.len());
+		benchmark::DoNotOptimize(buff.ptr());
 	}
 }
-BENCHMARK(ScalarBuffClampAligned);
 
-static void ScalarBuffClampUnaligned(benchmark::State& state) {
-	auto v = create_floats(ELEM_COUNT, RND_SEED, DEFAULT_RANGE);
-	for ([[maybe_unused]] auto _ : state) {
-		clamp_f32_buff_scalar(v.data(), (int)v.size());
-		benchmark::DoNotOptimize(v.data());
-	}
-}
-BENCHMARK(ScalarBuffClampUnaligned);
+#define MAKE_F32BUFF_BENCH(Align, Size, Func) \
+	static void Align ## __ ## Size ## __ ## Func (benchmark::State& state) \
+	{	\
+		BenchF32BufferOp<Func, Size, Align>(state); \
+	} \
+	BENCHMARK(Align ## __ ## Size ## __ ## Func)
 
-static void SIMDBuffClampAligned(benchmark::State& state) {
-	auto v = create_floats(ELEM_COUNT, RND_SEED, DEFAULT_RANGE);
-	auto s = get_simd_aligned_sub_span(v, SSE_FLOAT_ALIGN);
-	for ([[maybe_unused]] auto _ : state) {
-		clamp_f32_buff_sse(s.data(), (int)s.size());
-		benchmark::DoNotOptimize(s.data());
-	}
-}
-BENCHMARK(SIMDBuffClampAligned);
 
-static void SIMDBuffClampUnaligned(benchmark::State& state) {
-	auto v = create_floats(ELEM_COUNT, RND_SEED, DEFAULT_RANGE);
-	auto passed_size = v.size() - (v.size() % 4);
-	for ([[maybe_unused]] auto _ : state) {
-		clamp_f32_buff_sse_unaligned(v.data(), (int)passed_size);
-		benchmark::DoNotOptimize(v.data());
-	}
-}
-BENCHMARK(SIMDBuffClampUnaligned);
+//Unaligned buffer
+MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_KB, clamp_f32_buff_scalar);
+MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_KB, clamp_f32_buff_sse_unaligned);
+MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_KB, clamp_f32_buff_avx_unaligned);
+
+MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_MB, clamp_f32_buff_scalar);
+MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_MB, clamp_f32_buff_sse_unaligned);
+MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_MB, clamp_f32_buff_avx_unaligned);
+
+//SSE Aligned
+MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_KB, clamp_f32_buff_scalar);
+MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_KB, clamp_f32_buff_sse_unaligned);
+MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_KB, clamp_f32_buff_sse);
+MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_KB, clamp_f32_buff_avx_unaligned);
+
+MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_MB, clamp_f32_buff_scalar);
+MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_MB, clamp_f32_buff_sse_unaligned);
+MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_MB, clamp_f32_buff_sse);
+MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_MB, clamp_f32_buff_avx_unaligned);
+
+//AVX Aligned
+MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_KB, clamp_f32_buff_scalar);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_KB, clamp_f32_buff_sse_unaligned);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_KB, clamp_f32_buff_sse);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_KB, clamp_f32_buff_avx_unaligned);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_KB, clamp_f32_buff_avx);
+
+MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_MB, clamp_f32_buff_scalar);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_MB, clamp_f32_buff_sse_unaligned);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_MB, clamp_f32_buff_sse);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_MB, clamp_f32_buff_avx_unaligned);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_MB, clamp_f32_buff_avx);
