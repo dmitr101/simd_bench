@@ -11,8 +11,7 @@
 constexpr size_t RND_SEED = 651987;
 constexpr float DEFAULT_MIN = -1.5f;
 constexpr float DEFAULT_MAX = 1.5f;
-constexpr size_t ONE_KB = 1024;
-constexpr size_t ONE_MB = 1024 * 1024;
+constexpr size_t COUNT = 40 * 1000 * 1000;
 using in_place_buff_op_func = void(*)(float*, int);
 
 template<in_place_buff_op_func Func, size_t Size, size_t Alignment>
@@ -34,34 +33,19 @@ static void BenchF32BufferOp(benchmark::State& state)
 
 
 //Unaligned buffer
-MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_KB, clamp_f32_buff_scalar);
-MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_KB, clamp_f32_buff_sse_unaligned);
-MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_KB, clamp_f32_buff_avx_unaligned);
-
-MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_MB, clamp_f32_buff_scalar);
-MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_MB, clamp_f32_buff_sse_unaligned);
-MAKE_F32BUFF_BENCH(FLOAT_ALIGN, ONE_MB, clamp_f32_buff_avx_unaligned);
+MAKE_F32BUFF_BENCH(FLOAT_ALIGN, COUNT, clamp_f32_buff_scalar);
+MAKE_F32BUFF_BENCH(FLOAT_ALIGN, COUNT, clamp_f32_buff_sse_unaligned);
+MAKE_F32BUFF_BENCH(FLOAT_ALIGN, COUNT, clamp_f32_buff_avx_unaligned);
 
 //SSE Aligned
-MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_KB, clamp_f32_buff_scalar);
-MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_KB, clamp_f32_buff_sse_unaligned);
-MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_KB, clamp_f32_buff_sse);
-MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_KB, clamp_f32_buff_avx_unaligned);
-
-MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_MB, clamp_f32_buff_scalar);
-MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_MB, clamp_f32_buff_sse_unaligned);
-MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_MB, clamp_f32_buff_sse);
-MAKE_F32BUFF_BENCH(SSE_ALIGN, ONE_MB, clamp_f32_buff_avx_unaligned);
+MAKE_F32BUFF_BENCH(SSE_ALIGN, COUNT, clamp_f32_buff_scalar);
+MAKE_F32BUFF_BENCH(SSE_ALIGN, COUNT, clamp_f32_buff_sse_unaligned);
+MAKE_F32BUFF_BENCH(SSE_ALIGN, COUNT, clamp_f32_buff_sse);
+MAKE_F32BUFF_BENCH(SSE_ALIGN, COUNT, clamp_f32_buff_avx_unaligned);
 
 //AVX Aligned
-MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_KB, clamp_f32_buff_scalar);
-MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_KB, clamp_f32_buff_sse_unaligned);
-MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_KB, clamp_f32_buff_sse);
-MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_KB, clamp_f32_buff_avx_unaligned);
-MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_KB, clamp_f32_buff_avx);
-
-MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_MB, clamp_f32_buff_scalar);
-MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_MB, clamp_f32_buff_sse_unaligned);
-MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_MB, clamp_f32_buff_sse);
-MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_MB, clamp_f32_buff_avx_unaligned);
-MAKE_F32BUFF_BENCH(AVX_ALIGN, ONE_MB, clamp_f32_buff_avx);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, COUNT, clamp_f32_buff_scalar);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, COUNT, clamp_f32_buff_sse_unaligned);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, COUNT, clamp_f32_buff_sse);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, COUNT, clamp_f32_buff_avx_unaligned);
+MAKE_F32BUFF_BENCH(AVX_ALIGN, COUNT, clamp_f32_buff_avx);
