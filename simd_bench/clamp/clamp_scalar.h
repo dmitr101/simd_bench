@@ -1,5 +1,5 @@
 #pragma once
-#include "util/defs.h"
+#include "../util/defs.h"
 
 inline float clamp(float x, float min, float max)
 {

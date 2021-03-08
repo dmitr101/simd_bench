@@ -2,7 +2,7 @@
 
 #include <benchmark/benchmark.h>
 
-#include "util/buff_utils.h"
+#include "../util/buff_utils.h"
 
 #include "clamp_scalar.h"
 #include "clamp_sse.h"

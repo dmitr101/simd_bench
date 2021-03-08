@@ -43,7 +43,7 @@ struct f32buffer
 		f32buffer result;
 		result.data.reset(mem);
 		result.length = len;
-		return std::move(result);
+		return result;
 	}
 
 	static f32buffer create_random(size_t len, size_t seed, float min, float max)
@@ -52,6 +52,6 @@ struct f32buffer
 		std::mt19937_64 eng(seed);
 		std::uniform_real_distribution<float> distr(min, max);
 		std::generate_n(result.data.get(), len, [&eng, &distr]() {return distr(eng); });
-		return std::move(result);
+		return result;
 	}
 };

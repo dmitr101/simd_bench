@@ -1,7 +1,7 @@
 #pragma once
 
 #include <xmmintrin.h>
-#include "util/defs.h"
+#include "../util/defs.h"
 
 inline __m128 masked_select(__m128 mask, __m128 a, __m128 b)
 {
